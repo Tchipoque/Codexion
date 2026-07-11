@@ -50,9 +50,7 @@ t_dongle assign_dongles(int id)
 {
 	t_dongle dongle;
 
-	pthread_mutex_t mutex;
     dongle.id = id;
-	dongle.mutex = mutex;
     pthread_mutex_init(&dongle.mutex, NULL);
 	dongle.available = 0;
 	dongle.avaible_at = 0;
@@ -69,7 +67,7 @@ void create_thread(t_sim *simualtor)
 	i = 0;
 	while(i < simualtor->args.number_of_coders)
 	{
-		pthread_create(&coders[i].thread, NULL, increment_counter, coders[i].id);
+		pthread_create(&coders[i].thread, NULL, engine, &coders[i]);
 		i++;
 	}
 }
@@ -86,6 +84,7 @@ int iniciate(char **args, t_sim *simulator)
 		atol(args[7]), scheduler(args[8])
 	};
 	simulator->args = parameters;
+	simulator->start_time = gettimelog();
 	simulator->dongles = malloc(sizeof(t_dongle) * parameters.number_of_coders);
 	if (!simulator->dongles)
 		return 0;

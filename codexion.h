@@ -1,9 +1,11 @@
 #ifndef CODEXION_H
 #define CODEXION_H
 
+#define _XOPEN_SOURCE 500
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <pthread.h>
 #include <sys/time.h>
 
@@ -56,6 +58,10 @@ int	scheduler(char* word);
 int destroy_all(t_sim *sim);
 int validate(int argc, char **args);
 int iniciate(char **args, t_sim *simulator);
-void *increment_counter(void* coder);
+void *engine(void* arg);
 long gettimelog();
+void release(t_coder *coder, long cooldown);
+void check_compiles_count(t_sim *sim);
+void check_burnout(t_sim *sim, long last_compile);
+
 #endif
