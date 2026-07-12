@@ -1,42 +1,65 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   codexion.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/07/08 22:46:05 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/10 18:04:13 by etchipoq         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
-#include "codexion.h"
-#include <unistd.h>
+#include "../codexion.h"
 
-
-int main(int argc, char** argv)
+void refactoring(t_coder* coder, t_args args)
 {
-    t_sim *sim;
+    printf("Coder %d refactoring\n", coder->id);
+	usleep(1000 * args.time_to_refactor);
 
-    sim = malloc(sizeof(t_sim));
-    if (!sim)
-        return 0;
-
-    if (!validate(argc, argv))
-        return 0;
-
-    iniciate(argv, sim);
+}
 
 
-    printf("Simulation initialized\n");
-    printf("Number of coders: %s \n", argv[1]);
-    printf("-----------------------------------\n");
+void debugging(t_coder* coder, t_args args)
+{
+    printf("Coder %d debugging\n", coder->id);
+	usleep(1000 * args.time_to_debug);
 
-    for (int i = 0; i < sim->args.number_of_coders; i++)
-        pthread_join(sim->coders[i].thread, NULL);
+}
 
-    destroy_all(sim);
-    return(0);
+void compile(t_coder* coder, t_args args)
+{
+    coder->last_compile_start = gettimelog();
+    printf("Coder %d compiling\n", coder->id);
+    coder->compile_count += 1;
+	usleep(1000 * args.time_to_compile);
+}
 
+void take_dongle(t_coder *coder, t_dongle *dongle)
+{
+    char *type;
+
+    if (coder->id == dongle->id)
+        type = "right";
+    else
+        type = "left";
+
+    if (dongle->available && gettimelog() >= dongle->avaible_at)
+    {
+        pthread_mutex_lock(&dongle->mutex);
+        printf("Coder %d took the %s dongle n %d\n", coder->id, type, dongle->id);
+        dongle->available = 0;
+    }
+
+}
+void *engine(void* arg)
+{
+    t_coder* coder;
+    t_args args;
+
+    coder = (t_coder *) arg;
+    args = coder->sim->args;
+
+    while (!coder->sim->stop)
+    {
+        check_stoppers(coder);
+        take_dongle(coder, coder->right_dongle);
+        take_dongle(coder, coder->left_dongle);
+        check_stoppers(coder);
+        compile(coder, args);
+        release(coder, args.dongle_cooldown);
+        debugging(coder, args);
+        refactoring(coder, args);
+    }
+    return NULL;
 
 }

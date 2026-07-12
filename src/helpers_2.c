@@ -1,6 +1,6 @@
 #include "../codexion.h"
 
-void check_compiles_count(t_sim *sim)
+int check_compiles_count(t_sim *sim)
 {
     long i;
     long compile_count;
@@ -9,8 +9,8 @@ void check_compiles_count(t_sim *sim)
 
     i = -1;
     compile_count = 0;
-    required_compiles = args.number_of_coders * args.number_of_compiles_required;
     args = sim->args;
+    required_compiles = args.number_of_coders * args.number_of_compiles_required;
     while (++i < args.number_of_coders)
         compile_count += sim->coders[i].compile_count;
 
@@ -18,10 +18,12 @@ void check_compiles_count(t_sim *sim)
     {
         printf("THe system has concluided\n");
         sim->stop = 777;
+        return 1;
     }
+    return 0;
 }
 
-void check_burnout(t_sim *sim, long last_compile)
+int check_burnout(t_sim *sim, long last_compile, int id)
 {
     long clock;
 
@@ -32,7 +34,19 @@ void check_burnout(t_sim *sim, long last_compile)
 
     if (clock >= sim->args.time_to_burnout)
     {
-        printf("THe system has burnout\n");
+        printf("Coder %d has burnout\n", id);
         sim->stop = 777;
+        return 1;
     }
+    return 0;
+}
+
+int check_stoppers(t_coder *coder)
+{
+    if (check_burnout(coder->sim, coder->last_compile_start, coder->id))
+        return 1;
+    else if (check_compiles_count(coder->sim))
+        return 1;
+    else
+        return 0;
 }

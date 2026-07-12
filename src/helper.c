@@ -57,7 +57,7 @@ long gettimelog()
 }
 
 void release(t_coder *coder, long cooldown)
-{	
+{
 	long new_availability;
 	t_dongle *right;
 	t_dongle *left;
@@ -68,7 +68,10 @@ void release(t_coder *coder, long cooldown)
 	new_availability = gettimelog() + cooldown;
 	right->avaible_at = new_availability;
 	left->avaible_at = new_availability;
+	right->available = 1;
+	left->available = 1;
     pthread_mutex_unlock(&right->mutex);
     pthread_mutex_unlock(&left->mutex);
 	printf("Coder %d released dongles n (%d, %d)\n", coder->id, right->id, left->id);
 }
+

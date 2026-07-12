@@ -61,7 +61,7 @@ int iniciate(char **args, t_sim *simulator);
 void *engine(void* arg);
 long gettimelog();
 void release(t_coder *coder, long cooldown);
-void check_compiles_count(t_sim *sim);
-void check_burnout(t_sim *sim, long last_compile);
+void create_thread(t_sim *simualtor);
+int check_stoppers(t_coder *coder);
 
 #endif

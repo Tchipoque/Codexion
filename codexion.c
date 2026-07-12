@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/08 22:46:05 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/10 18:04:13 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/12 19:55:51 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ int main(int argc, char** argv)
     printf("Simulation initialized\n");
     printf("Number of coders: %s \n", argv[1]);
     printf("-----------------------------------\n");
+
+    create_thread(sim);
 
     for (int i = 0; i < sim->args.number_of_coders; i++)
         pthread_join(sim->coders[i].thread, NULL);
