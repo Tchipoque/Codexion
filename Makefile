@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra -Werror
 NAME = codexion
 
 MANDATORY_SRCS = \
-    codexion.c src/engine.c  src/helper.c  src/helpers_2.c  src/parser.c
+    codexion.c src/engine.c  src/helper.c  src/stoppers.c  src/parser.c
 
 OBJS = $(MANDATORY_SRCS:.c=.o)
 
@@ -14,7 +14,7 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(MANDATORY_SRCS) -o $(NAME)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@ 
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS)

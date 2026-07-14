@@ -27,8 +27,6 @@ typedef struct s_dongle
 	int	id;
 	pthread_mutex_t	mutex;
 	// pthread_cond_t	cond;
-	int	available;
-	long	avaible_at;
 }	t_dongle;
 
 typedef struct s_coder

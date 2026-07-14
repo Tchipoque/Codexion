@@ -52,8 +52,6 @@ t_dongle assign_dongles(int id)
 
     dongle.id = id;
     pthread_mutex_init(&dongle.mutex, NULL);
-	dongle.available = 1;
-	dongle.avaible_at = 0;
 
 	return dongle;
 }
