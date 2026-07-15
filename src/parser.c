@@ -41,6 +41,7 @@ t_coder assign_coder(int id, t_sim* sim, int d_c)
 	coder.last_compile_start = 0;
 	coder.left_dongle = &sim->dongles[(id - 1 + d_c) % d_c];
 	coder.right_dongle = &sim->dongles[id];
+    pthread_mutex_init(&coder.state, NULL);
 	coder.sim = sim;
 
 	return coder;
@@ -82,6 +83,9 @@ int iniciate(char **args, t_sim *simulator)
 		atol(args[7]), scheduler(args[8])
 	};
 	simulator->args = parameters;
+	simulator->stop = 0;
+	pthread_mutex_init(&simulator->stop_mutex, NULL);
+	pthread_mutex_init(&simulator->log_mutex, NULL);
 	simulator->start_time = gettimelog();
 	simulator->dongles = malloc(sizeof(t_dongle) * parameters.number_of_coders);
 	if (!simulator->dongles)

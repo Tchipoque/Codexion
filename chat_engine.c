@@ -18,8 +18,8 @@ void debugging(t_coder* coder, t_args args)
 void compile(t_coder* coder, t_args args)
 {
     pthread_mutex_lock(&coder->state);
-    coder->last_compile_start = gettimelog();
     coder->compile_count += 1;
+    coder->last_compile_start = gettimelog();
     pthread_mutex_unlock(&coder->state);
 
     printf("Coder %d compiling\n", coder->id);

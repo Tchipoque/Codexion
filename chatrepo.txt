@@ -1,0 +1,24 @@
+Quick summary of what I changed and why
+
+Problem: threads could deadlock because each coder always locked right then left. If many threads grabbed the same order, a circular wait could occur and workers would block forever, preventing pthread_join() and stopping the program.
+Also, when there was one coder, left and right were the same mutex — calling unlock twice caused undefined behavior.
+Fixes I applied:
+engine.c: lock dongles in a consistent order (lower ID first). Handle the single-coder case by taking the dongle once.
+helper.c release(): avoid double-unlocking when left == right.
+Why you saw the symptoms
+
+"No prints" / "only briefing": If threads deadlock, main waits on joins and only reaches briefing when threads exit (or if you interrupt). If the monitor can't break the deadlock (because threads are blocked on mutex locks), sim->stop won't help.
+"Burnout" behavior: The monitor sets sim->stop when it detects burnout; with blocking locks, a thread might be stuck waiting and never notice the stop flag. With consistent ordering, deadlocks are prevented and the monitor can take effect.
+Parameters affect timing: small/large times influence whether threads interleave in a way that triggers deadlock; the bug is in the locking order logic (code), not just the parameters. Parameters merely change the likelihood/timing.
+Why I avoided trylock
+
+You said you can't use pthread_mutex_trylock. The fixes I applied don't use trylock; they rely on a strict locking order which is the standard deadlock-avoidance technique for the Dining Philosophers problem.
+What I ran
+
+Rebuilt and ran ./codexion 3 1000 200 100 100 4 100 fifo. It now completes and prints the briefing and cleanup.
+Next steps (choose one)
+
+I can add a brief comment in engine.c explaining the ordering rationale.
+I can add more defensive checks / logging to help debug timing-sensitive runs.
+I can add a small test script to run multiple randomized parameter sets and report any runs that hang.
+Which would you like next?

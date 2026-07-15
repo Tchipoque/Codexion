@@ -38,6 +38,7 @@ typedef struct s_coder
 	t_dongle *left_dongle;
 	t_dongle *right_dongle;
 	struct s_sim *sim;
+	pthread_mutex_t state;
 }	t_coder;
 
 typedef struct s_sim
@@ -48,6 +49,7 @@ typedef struct s_sim
 	int	stop;
 	pthread_mutex_t	stop_mutex;
 	pthread_mutex_t	log_mutex;
+	pthread_t monitor;
 	long	start_time;
 }	t_sim;
 
@@ -61,5 +63,6 @@ long gettimelog();
 void release(t_coder *coder, long cooldown);
 void create_thread(t_sim *simualtor);
 int check_stoppers(t_coder *coder);
+void create_monitor(t_sim* sim);
 
 #endif

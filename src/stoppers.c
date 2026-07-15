@@ -26,7 +26,7 @@ int check_compiles_count(t_sim *sim)
 int check_burnout(t_sim *sim, long last_compile, int id)
 {
     long clock;
-
+    
     if (last_compile == 0)
         clock = gettimelog() - sim->start_time;
     else
@@ -43,10 +43,18 @@ int check_burnout(t_sim *sim, long last_compile, int id)
 
 int check_stoppers(t_coder *coder)
 {
+    int stop;
+    
+    pthread_mutex_lock(&coder->state);
+    
     if (check_burnout(coder->sim, coder->last_compile_start, coder->id))
-        return 1;
+        stop = 1;
     else if (check_compiles_count(coder->sim))
-        return 1;
+        stop = 1;
     else
-        return 0;
+        stop = 0;
+    pthread_mutex_unlock(&coder->state);
+
+    return stop;
+    
 }

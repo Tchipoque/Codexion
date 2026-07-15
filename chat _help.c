@@ -69,8 +69,14 @@ void release(t_coder *coder, long cooldown)
 	left = coder->left_dongle;
 
 	usleep(1000 * cooldown);
-    pthread_mutex_unlock(&right->mutex);
-    pthread_mutex_unlock(&left->mutex);
+	/* If both pointers are the same (1 coder), unlock only once */
+	if (right == left)
+		pthread_mutex_unlock(&right->mutex);
+	else
+	{
+		pthread_mutex_unlock(&right->mutex);
+		pthread_mutex_unlock(&left->mutex);
+	}
 	printf("Coder %d released dongles n (%d, %d)\n", coder->id, right->id, left->id);
 }
 
