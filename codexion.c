@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/08 22:46:05 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/12 19:55:51 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/16 22:51:56 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@ void print_briefing(t_sim* sim)
     int i;
 
     i = 0;
-    printf("-----------------------------------\n\n");
-    printf("Briefing\n");
+    printf("-----------------------------------\n");
+    printf("RESUME:\n");
+    printf("N of coders: %d\n", sim->args.number_of_coders);
+    printf("N of compiles: %d\n", sim->args.number_of_compiles_required);
     printf("-----------------------------------\n");
     while(i < sim->args.number_of_coders)
     {
@@ -27,7 +29,7 @@ void print_briefing(t_sim* sim)
         i++;
     }
     printf("-----------------------------------\n");
-    printf("Finished in %ld seconds\n", gettimelog() - sim->start_time);
+    printf("Finished in %ld seconds\n", (gettimelog() - sim->start_time) / 1000);
     printf("-----------------------------------\n");
 
 }
@@ -49,20 +51,18 @@ int main(int argc, char** argv)
 
 
     printf("Simulation initialized\n");
-    printf("Number of coders: %s \n", argv[1]);
     printf("-----------------------------------\n");
 
     create_thread(sim);
     create_monitor(sim);
-    
+
     while(i < sim->args.number_of_coders)
         pthread_join(sim->coders[i++].thread, NULL);
 
     pthread_join(sim->monitor, NULL);
-    
+
     print_briefing(sim);
     destroy_all(sim);
     return(0);
-
 
 }

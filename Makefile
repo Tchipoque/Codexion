@@ -25,4 +25,4 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
-# ./codexion 3 800 200 200 200 3 100 fifo
+# ./codexion 9 1000 200 100 100 5 100 fifo
