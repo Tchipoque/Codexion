@@ -50,6 +50,8 @@ typedef struct s_sim
 	pthread_mutex_t	stop_mutex;
 	pthread_mutex_t	log_mutex;
 	pthread_t monitor;
+	int *queue;
+	pthread_mutex_t queue_mutex;
 	long	start_time;
 }	t_sim;
 
@@ -64,5 +66,8 @@ void release(t_coder *coder, long cooldown);
 void create_thread(t_sim *simualtor);
 int check_stoppers(t_coder *coder);
 void create_monitor(t_sim* sim);
+void take_dongle(t_coder *coder, t_dongle *dongle);
+void remove_id(int id, t_sim* sim);
+void request_dongle(t_coder* coder, t_dongle* dongle);
 
 #endif

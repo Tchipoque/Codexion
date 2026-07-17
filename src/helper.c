@@ -40,8 +40,10 @@ int destroy_all(t_sim *sim)
 
 	free(sim->coders);
     free(sim->dongles);
+	free(sim->queue);
 	pthread_mutex_destroy(&sim->stop_mutex);
 	pthread_mutex_destroy(&sim->log_mutex);
+	pthread_mutex_destroy(&sim->queue_mutex);
     free(sim);
     printf("all clearr\n");
     return 1;
@@ -77,6 +79,7 @@ void release(t_coder *coder, long cooldown)
 		pthread_mutex_unlock(&right->mutex);
 		pthread_mutex_unlock(&left->mutex);
 	}
+	remove_id(coder->id, coder->sim);
 	printf("Coder %d released dongles n (%d, %d)\n", coder->id, right->id, left->id);
 }
 

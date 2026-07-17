@@ -3,24 +3,21 @@
 int check_compiles_count(t_sim *sim)
 {
     long i;
-    long compile_count;
     long required_compiles;
     t_args args;
 
     i = -1;
-    compile_count = 0;
     args = sim->args;
-    required_compiles = args.number_of_coders * args.number_of_compiles_required;
+    required_compiles = args.number_of_compiles_required;
     while (++i < args.number_of_coders)
-        compile_count += sim->coders[i].compile_count;
-
-    if (compile_count >= required_compiles)
     {
-        printf("THe system has concluided\n");
-        sim->stop = 777;
-        return 1;
+        //printf("here\n\n");
+        if (required_compiles > sim->coders[i].compile_count)
+            return 0;
     }
-    return 0;
+
+    sim->stop = 777;
+    return 1;
 }
 
 int check_burnout(t_sim *sim, long last_compile, int id)
@@ -34,7 +31,7 @@ int check_burnout(t_sim *sim, long last_compile, int id)
 
     if (clock >= sim->args.time_to_burnout)
     {
-        printf("Coder %d has burnout\n", id);
+        printf("\033[1;31mCoder %d has burnout\033[0m\n", id);
         sim->stop = 777;
         return 1;
     }
@@ -47,9 +44,9 @@ int check_stoppers(t_coder *coder)
     
     pthread_mutex_lock(&coder->state);
     
-    if (check_burnout(coder->sim, coder->last_compile_start, coder->id))
+    if (check_burnout(coder->sim, coder->last_compile_start, coder->id) == 1)
         stop = 1;
-    else if (check_compiles_count(coder->sim))
+    else if (check_compiles_count(coder->sim) == 1)
         stop = 1;
     else
         stop = 0;

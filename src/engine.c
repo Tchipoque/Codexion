@@ -63,13 +63,13 @@ void *engine(void* arg)
         /* If both dongles are the same (single coder), only take once */
         if (first == second)
         {
-            take_dongle(coder, first);
+            request_dongle(coder, first);
             compile(coder, args);
         }
         else
         {
-            take_dongle(coder, first);
-            take_dongle(coder, second);
+            request_dongle(coder, first);
+            request_dongle(coder, second);
             compile(coder, args);
         }
         release(coder, args.dongle_cooldown);

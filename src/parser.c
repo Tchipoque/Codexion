@@ -86,6 +86,7 @@ int iniciate(char **args, t_sim *simulator)
 	simulator->stop = 0;
 	pthread_mutex_init(&simulator->stop_mutex, NULL);
 	pthread_mutex_init(&simulator->log_mutex, NULL);
+	pthread_mutex_init(&simulator->queue_mutex, NULL);
 	simulator->start_time = gettimelog();
 	simulator->dongles = malloc(sizeof(t_dongle) * parameters.number_of_coders);
 	if (!simulator->dongles)
@@ -99,6 +100,13 @@ int iniciate(char **args, t_sim *simulator)
 		return free(simulator->dongles), 0;
 	while(++i < parameters.number_of_coders)
 		simulator->coders[i] = assign_coder(i, simulator, c);
+
+	simulator->queue = malloc(sizeof(int) * parameters.number_of_coders);
+	if (!simulator->queue)
+		return 0;
+	i = -1;
+	while (++i < parameters.number_of_coders)
+		simulator->queue[i] = -1;
 
     return 1;
 }
