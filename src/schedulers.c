@@ -37,7 +37,7 @@ int find_id(int id, t_sim* sim)
     return found;
 }
 
-int fifo_dongle(int id, t_sim* sim)
+void fifo_dongle(int id, t_sim* sim)
 {
     int i;
 
@@ -64,6 +64,9 @@ int fifo_dongle(int id, t_sim* sim)
     return 0;
 }
 
+void edf_dongle(int id, t_sim *sim)
+{
+}
 
 void request_dongle(t_coder* coder, t_dongle* dongle)
 {
