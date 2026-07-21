@@ -1,57 +1,75 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   stoppers.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/07/21 23:35:14 by etchipoq          #+#    #+#             */
+/*   Updated: 2026/07/21 23:35:15 by etchipoq         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../codexion.h"
 
-int check_compiles_count(t_sim *sim)
+/**
+ * Returns non-zero when every coder reached the required compile count.
+ */
+int	check_compile_goal(t_sim *sim)
 {
-    long i;
-    long required_compiles;
-    t_args args;
+	long	i;
+	long	required_compiles;
+	t_args	args;
 
-    i = -1;
-    args = sim->args;
-    required_compiles = args.number_of_compiles_required;
-    while (++i < args.number_of_coders)
-    {
-        //printf("here\n\n");
-        if (required_compiles > sim->coders[i].compile_count)
-            return 0;
-    }
-
-    sim->stop = 777;
-    return 1;
+	i = -1;
+	args = sim->args;
+	required_compiles = args.number_of_compiles_required;
+	while (++i < args.number_of_coders)
+	{
+		// printf("here\n\n");
+		if (required_compiles > sim->coders[i].compile_count)
+			return (0);
+	}
+	sim->stop = 18;
+	return (1);
 }
 
-int check_burnout(t_sim *sim, long last_compile, int id)
+/**
+ * Returns non-zero when a coder exceeded the burnout deadline.
+ */
+int	check_burnout_timeout(t_sim *sim, long last_compile, int id)
 {
-    long clock;
-    
-    if (last_compile == 0)
-        clock = gettimelog() - sim->start_time;
-    else
-        clock = gettimelog() - last_compile;
+	long	clock;
 
-    if (clock >= sim->args.time_to_burnout)
-    {
-        printf("\033[1;31mCoder %d has burnout\033[0m\n", id);
-        sim->stop = 777;
-        return 1;
-    }
-    return 0;
+	if (last_compile == 0)
+		clock = get_time_ms() - sim->start_time;
+	else
+		clock = get_time_ms() - last_compile;
+	if (clock >= sim->args.time_to_burnout)
+	{
+		printf("\033[1;31mCoder %d has burnout\033[0m\n", id);
+		sim->stop = 7;
+		sim->burned_out = 9;
+		return (1);
+	}
+	return (0);
 }
 
-int check_stoppers(t_coder *coder)
+/**
+ * Evaluates all simulation stop conditions for one coder.
+ */
+int	check_stop_conditions(t_coder *coder)
 {
-    int stop;
-    
-    pthread_mutex_lock(&coder->state);
-    
-    if (check_burnout(coder->sim, coder->last_compile_start, coder->id) == 1)
-        stop = 1;
-    else if (check_compiles_count(coder->sim) == 1)
-        stop = 1;
-    else
-        stop = 0;
-    pthread_mutex_unlock(&coder->state);
+	int	stop;
 
-    return stop;
-    
+	pthread_mutex_lock(&coder->state);
+	if (check_burnout_timeout(coder->sim, coder->last_compile_start,
+			coder->id) == 1)
+		stop = 1;
+	else if (check_compile_goal(coder->sim) == 1)
+		stop = 1;
+	else
+		stop = 0;
+	pthread_mutex_unlock(&coder->state);
+	return (stop);
 }
