@@ -79,7 +79,12 @@ void release(t_coder *coder, long cooldown)
 		pthread_mutex_unlock(&right->mutex);
 		pthread_mutex_unlock(&left->mutex);
 	}
-	remove_id(coder->id, coder->sim);
+	if (coder->sim->args.scheduler)
+        remove_id(coder->id, coder->sim);
+    else
+		request_edf(-1, coder->sim);
+
+
 	printf("Coder %d released dongles n (%d, %d)\n", coder->id, right->id, left->id);
 }
 

@@ -8,7 +8,14 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <sys/time.h>
+#include <limits.h>
 
+
+typedef struct s_priority
+{
+	int	id;
+	long	burnout;
+} t_priority;
 
 typedef struct s_args
 {
@@ -39,6 +46,7 @@ typedef struct s_coder
 	t_dongle *right_dongle;
 	struct s_sim *sim;
 	pthread_mutex_t state;
+	pthread_cond_t cond;
 }	t_coder;
 
 typedef struct s_sim
@@ -69,5 +77,8 @@ void create_monitor(t_sim* sim);
 void take_dongle(t_coder *coder, t_dongle *dongle);
 void remove_id(int id, t_sim* sim);
 void request_dongle(t_coder* coder, t_dongle* dongle);
+void request_fifo(int id, t_sim* sim);
+void request_edf(int id, t_sim* sim);
+
 
 #endif
