@@ -46,7 +46,6 @@ typedef struct s_coder
 	t_dongle *right_dongle;
 	struct s_sim *sim;
 	pthread_mutex_t state;
-	pthread_cond_t cond;
 }	t_coder;
 
 typedef struct s_sim
@@ -60,6 +59,7 @@ typedef struct s_sim
 	pthread_t monitor;
 	int *queue;
 	pthread_mutex_t queue_mutex;
+	pthread_cond_t cond;
 	long	start_time;
 }	t_sim;
 
@@ -79,6 +79,7 @@ void remove_id(int id, t_sim* sim);
 void request_dongle(t_coder* coder, t_dongle* dongle);
 void request_fifo(int id, t_sim* sim);
 void request_edf(int id, t_sim* sim);
+int find_id(int id, t_sim* sim);
 
 
 #endif

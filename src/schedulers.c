@@ -55,12 +55,12 @@ void request_edf(int id, t_sim *sim)
     pthread_mutex_lock(&sim->queue_mutex);
     initialize_priority_list(priority_list, sim);
     sort_queue_by_burnout(priority_list, sim);
+
+
+    while (id != -1 && sim->queue[0] != id)
+        pthread_cond_wait(&sim->cond, &sim->queue_mutex);
+
     pthread_mutex_unlock(&sim->queue_mutex);
-
-    while (!sim->stop && id != -1)
-        pthread_cond_wait(&sim->coders[id].cond, &sim->queue_mutex);
-
-
 }
 
 void request_fifo(int id, t_sim* sim)
@@ -79,8 +79,10 @@ void request_fifo(int id, t_sim* sim)
             break;
         }
     }
-    pthread_mutex_unlock(&sim->queue_mutex);
 
     while (sim->queue[0] != id)
-        pthread_cond_wait(&sim->coders[id].cond, &sim->queue_mutex);
+        pthread_cond_wait(&sim->cond, &sim->queue_mutex);
+
+    pthread_mutex_unlock(&sim->queue_mutex);
+
 }

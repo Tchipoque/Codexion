@@ -1,7 +1,7 @@
 #include "../codexion.h"
 
 
-void* monitoring(void *arg) 
+void* monitoring(void *arg)
 {
     t_sim* sim;
     int i;

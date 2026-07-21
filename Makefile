@@ -4,7 +4,8 @@ CFLAGS = -Wall -Wextra -Werror
 NAME = codexion
 
 MANDATORY_SRCS = \
-    codexion.c src/engine.c  src/helper.c  src/stoppers.c  src/parser.c src/monitor.c src/schedulers.c
+    codexion.c src/dongle_manager.c src/helper.c src/parser.c src/stoppers.c src/engine.c src/monitor.c src/schedulers.c
+
 
 OBJS = $(MANDATORY_SRCS:.c=.o)
 

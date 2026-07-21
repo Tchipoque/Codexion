@@ -4,16 +4,15 @@
 void remove_id(int id, t_sim* sim)
 {
     int i;
-    int removed;
 
     i = -1;
-    removed = 0;
     (void) id;
     pthread_mutex_lock(&sim->queue_mutex);
     while(++i < sim->args.number_of_coders - 1)
         sim->queue[i] = sim->queue[1 + i];
 
     sim->queue[i] = -1;
+    pthread_cond_broadcast(&sim->cond);
 
     pthread_mutex_unlock(&sim->queue_mutex);
 

@@ -87,6 +87,7 @@ int iniciate(char **args, t_sim *simulator)
 	pthread_mutex_init(&simulator->stop_mutex, NULL);
 	pthread_mutex_init(&simulator->log_mutex, NULL);
 	pthread_mutex_init(&simulator->queue_mutex, NULL);
+	pthread_cond_init(&simulator->cond, NULL);
 	simulator->start_time = gettimelog();
 	simulator->dongles = malloc(sizeof(t_dongle) * parameters.number_of_coders);
 	if (!simulator->dongles)
