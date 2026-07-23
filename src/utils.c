@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:35:44 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/21 23:35:45 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/23 00:32:57 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ long	get_time_ms(void)
 }
 
 /**
- * Waits for cooldown, releases both dongles, and updates the queue.
+ * Releases both dongles, updates the queue, then waits for cooldown.
  */
 void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 {
@@ -89,7 +89,6 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 
 	right = coder->right_dongle;
 	left = coder->left_dongle;
-	usleep(1000 * cooldown);
 	if (right == left)
 		pthread_mutex_unlock(&right->mutex);
 	else
@@ -106,4 +105,5 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 	pthread_mutex_unlock(&coder->sim->queue_mutex);
 	printf("Coder %d released dongles n (%d, %d)\n", coder->id, right->id,
 		left->id);
+	usleep(1000 * cooldown);
 }

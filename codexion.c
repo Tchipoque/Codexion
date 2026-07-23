@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/08 22:46:05 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/22 00:38:26 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/22 23:26:41 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,7 @@ static void	print_simulation_summary(t_sim *sim)
 	i = (get_time_ms() - sim->start_time) / 1000;
 	printf("-----------------------------------\n");
 	if (sim->burned_out)
-		printf("Unuccessfully finished cycles in %ld seconds, unsuccessfully\n",
-			i);
+		printf("Unsuccessfully finished cycles in %ld seconds.\n", i);
 	else
 		printf("Successfully finished cycles in %ld seconds.\n", i);
 	printf("-----------------------------------\n");
