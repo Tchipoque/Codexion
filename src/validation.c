@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:35:37 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/22 00:38:26 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/29 22:47:41 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static int	validate_argument(int i, char *arg, char *parameters[])
 			return (0);
 		}
 	}
-	else if (!(is_numeric_string(arg)) || atoi(arg) <= 0)
+	else if (!(is_numeric_string(arg)) || atoi(arg) < 0)
 	{
 		printf("ERROR, %s has to be a positive integer and 0 < \n", parameters[i
 			- 1]);

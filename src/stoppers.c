@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:35:14 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/21 23:35:15 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/28 21:26:51 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,19 +40,22 @@ int	check_compile_goal(t_sim *sim)
 int	check_burnout_timeout(t_sim *sim, long last_compile, int id)
 {
 	long	clock;
+	int	burnt;
+	long	time;
 
-	if (last_compile == 0)
-		clock = get_time_ms() - sim->start_time;
-	else
-		clock = get_time_ms() - last_compile;
+	burnt = 0;
+	clock = get_time_ms() - last_compile;
+	time = get_time_ms() - sim->start_time;
 	if (clock >= sim->args.time_to_burnout)
 	{
-		printf("\033[1;31mCoder %d has burnout\033[0m\n", id);
+		printf("\033[1;31m%ld %d has burnout\033[0m\n",time,  id);
 		sim->stop = 7;
 		sim->burned_out = 9;
-		return (1);
+		burnt = 1;
+		// destroy_simulation(sim);
+		// exit(1);
 	}
-	return (0);
+	return (burnt);
 }
 
 /**

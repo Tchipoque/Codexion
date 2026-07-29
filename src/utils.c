@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:35:44 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/23 00:32:57 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/28 21:44:21 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,13 +86,20 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 {
 	t_dongle	*right;
 	t_dongle	*left;
+	long	time;
 
 	right = coder->right_dongle;
 	left = coder->left_dongle;
+	time = get_time_ms() - coder->sim->start_time;
 	if (right == left)
+	{
+		right->available_at = (long) get_time_ms + cooldown;
 		pthread_mutex_unlock(&right->mutex);
+	}
 	else
 	{
+		right->available_at = (long) get_time_ms + cooldown;
+		left->available_at = (long) get_time_ms + cooldown;
 		pthread_mutex_unlock(&right->mutex);
 		pthread_mutex_unlock(&left->mutex);
 	}
@@ -103,7 +110,6 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 	pthread_mutex_lock(&coder->sim->queue_mutex);
 	pthread_cond_broadcast(&coder->sim->cond);
 	pthread_mutex_unlock(&coder->sim->queue_mutex);
-	printf("Coder %d released dongles n (%d, %d)\n", coder->id, right->id,
+	printf("%ld %d released dongles n (%d, %d)\n", time, coder->id, right->id,
 		left->id);
-	usleep(1000 * cooldown);
 }

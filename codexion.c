@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/08 22:46:05 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/22 23:26:41 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/28 21:52:46 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 static void	print_simulation_summary(t_sim *sim)
 {
 	long	i;
+	long	c;
 
 	i = 0;
 	printf("-----------------------------------\n");
@@ -28,7 +29,8 @@ static void	print_simulation_summary(t_sim *sim)
 	printf("-----------------------------------\n");
 	while (i < sim->args.number_of_coders)
 	{
-		printf("Coder %ld : %d compiles\n", i, sim->coders[i].compile_count);
+		c = i + 1;
+		printf("Coder %ld : %d compiles\n", c, sim->coders[i].compile_count);
 		i++;
 	}
 	i = (get_time_ms() - sim->start_time) / 1000;

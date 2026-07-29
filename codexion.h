@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:36:10 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/22 00:38:26 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/28 21:35:49 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ typedef struct s_dongle
 {
 	int				id;
 	pthread_mutex_t	mutex;
-	// pthread_cond_t	cond;
+	long			available_at;
 }					t_dongle;
 
 /**

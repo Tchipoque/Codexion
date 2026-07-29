@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:34:24 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/22 00:38:26 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/28 21:50:39 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,14 +55,14 @@ int	queue_contains_id(int id, t_sim *sim)
  */
 static void	acquire_dongle(t_coder *coder, t_dongle *dongle)
 {
-	char	*type;
+	long time;
+	int	i;
 
-	if (coder->id == dongle->id)
-		type = "right";
-	else
-		type = "left";
+	time = get_time_ms() - coder->sim->start_time;
+	while(!coder->sim->stop && get_time_ms() < dongle->available_at)
+		i++;
 	pthread_mutex_lock(&dongle->mutex);
-	printf("Coder %d took the %s dongle n %d\n", coder->id, type, dongle->id);
+	printf("%ld %d has taken dongle n %d \n", time, 1 + coder->id, dongle->id);
 }
 
 /**

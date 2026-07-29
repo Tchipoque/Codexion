@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:34:31 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/22 00:38:26 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/07/28 21:36:50 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static t_dongle	initialize_dongle(int id)
 	t_dongle	dongle;
 
 	dongle.id = id;
+	dongle.available_at = get_time_ms();
 	pthread_mutex_init(&dongle.mutex, NULL);
 	return (dongle);
 }
