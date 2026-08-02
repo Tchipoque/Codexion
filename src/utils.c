@@ -61,7 +61,7 @@ int	destroy_simulation(t_sim *sim)
 	pthread_mutex_destroy(&sim->queue_mutex);
 	pthread_cond_destroy(&sim->cond);
 	free(sim);
-	printf("all clearr\n");
+	// printf("all clearr\n");
 	return (1);
 }
 /**
@@ -93,13 +93,13 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 	time = get_time_ms() - coder->sim->start_time;
 	if (right == left)
 	{
-		right->available_at = (long) get_time_ms + cooldown;
+		right->available_at = get_time_ms() + cooldown;
 		pthread_mutex_unlock(&right->mutex);
 	}
 	else
 	{
-		right->available_at = (long) get_time_ms + cooldown;
-		left->available_at = (long) get_time_ms + cooldown;
+		right->available_at = get_time_ms() + cooldown;
+		left->available_at = get_time_ms() + cooldown;
 		pthread_mutex_unlock(&right->mutex);
 		pthread_mutex_unlock(&left->mutex);
 	}
@@ -110,6 +110,8 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 	pthread_mutex_lock(&coder->sim->queue_mutex);
 	pthread_cond_broadcast(&coder->sim->cond);
 	pthread_mutex_unlock(&coder->sim->queue_mutex);
-	printf("%ld %d released dongles n (%d, %d)\n", time, coder->id, right->id,
-		left->id);
+	/* Avoid printing any events after simulation stop. */
+	if (!coder->sim->stop)
+		printf("%ld %d released dongles n (%d, %d)\n", time, coder->id + 1, right->id,
+			left->id);
 }

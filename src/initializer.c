@@ -25,7 +25,7 @@ static t_coder	initialize_coder(int id, t_sim *sim)
 		left = sim->args.number_of_coders - 1;
 	coder.id = id;
 	coder.compile_count = 0;
-	coder.last_compile_start = 0;
+	 coder.last_compile_start = get_time_ms();
 	coder.left_dongle = &sim->dongles[left];
 	coder.right_dongle = &sim->dongles[id];
 	pthread_mutex_init(&coder.state, NULL);
@@ -93,19 +93,29 @@ static int	initialize_simulation_state(t_sim *simulator)
 int	initialize_simulation(char **args, t_sim *simulator)
 {
 	t_args	parameters;
+	size_t n;
 
 	parameters = (t_args){atoi(args[1]), atol(args[2]), atol(args[3]),
 		atol(args[4]), atol(args[5]), atoi(args[6]), atol(args[7]),
 		is_fifo_scheduler(args[8])};
 	simulator->args = parameters;
-	simulator->dongles = malloc(sizeof(t_dongle) * parameters.number_of_coders);
-	if (!simulator->dongles)
+	n = (size_t)parameters.number_of_coders;
+	if (parameters.number_of_coders < 0)
 		return (0);
-	simulator->coders = malloc(sizeof(t_coder) * parameters.number_of_coders);
-	if (!simulator->coders)
+	if (n > 0 && n > SIZE_MAX / sizeof(t_dongle))
+		return (0);
+	simulator->dongles = malloc(sizeof(t_dongle) * n);
+	if (!simulator->dongles && n > 0)
+		return (0);
+	if (n > 0 && n > SIZE_MAX / sizeof(t_coder))
 		return (free(simulator->dongles), 0);
-	simulator->queue = malloc(sizeof(int) * parameters.number_of_coders);
-	if (!simulator->queue)
+	simulator->coders = malloc(sizeof(t_coder) * n);
+	if (!simulator->coders && n > 0)
+		return (free(simulator->dongles), 0);
+	if (n > 0 && n > ((size_t)-1) / sizeof(int))
+		return (free(simulator->dongles), free(simulator->coders), 0);
+	simulator->queue = malloc(sizeof(int) * n);
+	if (!simulator->queue && n > 0)
 		return (free(simulator->dongles), free(simulator->coders), 0);
 	return (initialize_simulation_state(simulator));
 }

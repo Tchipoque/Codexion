@@ -25,11 +25,16 @@ static int	validate_argument(int i, char *arg, char *parameters[])
 			return (0);
 		}
 	}
-	else if (!(is_numeric_string(arg)) || atoi(arg) < 0)
+	else
 	{
-		printf("ERROR, %s has to be a positive integer and 0 < \n", parameters[i
-			- 1]);
-		return (0);
+		long val = atol(arg);
+		if (!is_numeric_string(arg) || val < 0
+		 || (val == 0 && (i == 1 || i == 6)) || val > INT_MAX)
+		{
+			printf("ERROR, %s has to be a positive integer and 0 < n < INT_MAX \n", parameters[i
+				- 1]);
+			return (0);
+		}
 	}
 	return (1);
 }
@@ -48,12 +53,12 @@ int	validate_arguments(int argc, char **args)
 	if (argc != 9)
 	{
 		printf("ERROR, program is expecting 8 arguments\n");
-		exit(1);
+		return(0);
 	}
 	while (args[++i])
 	{
 		if (!validate_argument(i, args[i], parameters))
-			exit(1);
+			return(0);
 	}
 	return (1);
 }

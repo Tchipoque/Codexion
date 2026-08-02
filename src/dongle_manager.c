@@ -17,7 +17,7 @@
  */
 void	remove_coder_from_queue(int id, t_sim *sim)
 {
-	int	i;
+	int i;
 
 	i = -1;
 	(void)id;
@@ -59,10 +59,16 @@ static void	acquire_dongle(t_coder *coder, t_dongle *dongle)
 	int	i;
 
 	time = get_time_ms() - coder->sim->start_time;
+	i = 0;
 	while(!coder->sim->stop && get_time_ms() < dongle->available_at)
 		i++;
 	pthread_mutex_lock(&dongle->mutex);
-	printf("%ld %d has taken dongle n %d \n", time, 1 + coder->id, dongle->id);
+	if (coder->sim->stop)
+	{
+		pthread_mutex_unlock(&dongle->mutex);
+		return;
+	}
+	printf("%ld %d has taken dongle n %d\n", time, 1 + coder->id, dongle->id);
 }
 
 /**
@@ -76,6 +82,9 @@ void	acquire_dongles(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2)
 		wait_for_fifo_turn(coder->id, coder->sim);
 	else
 		wait_for_edf_turn(coder->id, coder->sim);
+
+	if (coder->sim->stop)
+		return;
 	if (dongle1->id > dongle2->id)
 	{
 		tmp = dongle1;

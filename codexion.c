@@ -22,6 +22,8 @@ static void	print_simulation_summary(t_sim *sim)
 	long	c;
 
 	i = 0;
+	if (sim->burned_out)
+		return;
 	printf("-----------------------------------\n");
 	printf("RESUME:\n");
 	printf("N of coders: %d\n", sim->args.number_of_coders);
@@ -35,10 +37,7 @@ static void	print_simulation_summary(t_sim *sim)
 	}
 	i = (get_time_ms() - sim->start_time) / 1000;
 	printf("-----------------------------------\n");
-	if (sim->burned_out)
-		printf("Unsuccessfully finished cycles in %ld seconds.\n", i);
-	else
-		printf("Successfully finished cycles in %ld seconds.\n", i);
+	printf("Successfully finished cycles in %ld seconds.\n", i);
 	printf("-----------------------------------\n");
 }
 
@@ -53,10 +52,12 @@ int	main(int argc, char **argv)
 	i = 0;
 	sim = malloc(sizeof(t_sim));
 	if (!sim)
-		return (0);
+		return (1);
 	if (!validate_arguments(argc, argv))
-		return (0);
-	initialize_simulation(argv, sim);
+		return (free(sim), 1);
+	if (!initialize_simulation(argv, sim))
+		return (free(sim), 1);
+
 	printf("Simulation initialized\n");
 	printf("-----------------------------------\n");
 	create_coder_threads(sim);

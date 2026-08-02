@@ -78,7 +78,7 @@ void	wait_for_edf_turn(int id, t_sim *sim)
 	pthread_mutex_lock(&sim->queue_mutex);
 	build_wait_time_priorities(priority_list, sim);
 	sort_queue_by_wait_time_desc(priority_list, sim);
-	while (id != -1 && sim->queue[0] != id)
+	while (!sim->stop && (id != -1 && sim->queue[0] != id))
 		pthread_cond_wait(&sim->cond, &sim->queue_mutex);
 	pthread_mutex_unlock(&sim->queue_mutex);
 }
@@ -102,7 +102,7 @@ void	wait_for_fifo_turn(int id, t_sim *sim)
 			break ;
 		}
 	}
-	while (sim->queue[0] != id)
+	while (!sim->stop && sim->queue[0] != id)
 		pthread_cond_wait(&sim->cond, &sim->queue_mutex);
 	pthread_mutex_unlock(&sim->queue_mutex);
 }

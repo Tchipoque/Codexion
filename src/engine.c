@@ -19,6 +19,8 @@ static void	perform_refactoring(t_coder *coder, t_args args)
 {
 	long time;
 
+	if (coder->sim->stop)
+		return;
 	time = get_time_ms() - coder->sim->start_time;
 	printf("%ld %d is refactoring \n", time, 1 + coder->id);
 	usleep(1000 * args.time_to_refactor);
@@ -30,6 +32,8 @@ static void	perform_debugging(t_coder *coder, t_args args)
 {
 	long time;
 
+	if (coder->sim->stop)
+		return;
 	time = get_time_ms() - coder->sim->start_time;
 	printf("%ld %d is refactoring \n", time, 1 + coder->id);
 	usleep(1000 * args.time_to_debug);
@@ -42,6 +46,8 @@ static void	perform_compile(t_coder *coder, t_args args)
 {
 	long time;
 
+	if (coder->sim->stop)
+		return;
 	pthread_mutex_lock(&coder->state);
 	coder->last_compile_start = get_time_ms();
 	coder->compile_count += 1;
@@ -63,13 +69,15 @@ void	*run_coder_cycle(void *arg)
 	t_dongle	*second;
 
 	coder = (t_coder *)arg;
-	coder->last_compile_start = get_time_ms();
+	coder->last_compile_start = coder->sim->start_time;
 	args = coder->sim->args;
 	while (!coder->sim->stop)
 	{
 		first = coder->left_dongle;
 		second = coder->right_dongle;
 		acquire_dongles(coder, first, second);
+			if (coder->sim->stop)
+				break ;
 		perform_compile(coder, args);
 		release_dongles_and_requeue(coder, args.dongle_cooldown);
 		perform_debugging(coder, args);

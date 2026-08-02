@@ -48,12 +48,17 @@ int	check_burnout_timeout(t_sim *sim, long last_compile, int id)
 	time = get_time_ms() - sim->start_time;
 	if (clock >= sim->args.time_to_burnout)
 	{
-		printf("\033[1;31m%ld %d has burnout\033[0m\n",time,  id);
-		sim->stop = 7;
-		sim->burned_out = 9;
+		/* Report burnout (1-based coder id), signal stop and wake waiters.
+		   Do NOT destroy or exit here — let main join threads and clean up. */
+		time = get_time_ms() - sim->start_time;
+		printf("\033[1;31m%ld %d burned out\033[0m\n", time, id + 1);
+		sim->stop = 1;
+		sim->burned_out = 1;
 		burnt = 1;
-		// destroy_simulation(sim);
-		// exit(1);
+		time = get_time_ms() - sim->start_time;
+		pthread_mutex_lock(&sim->queue_mutex);
+		pthread_cond_broadcast(&sim->cond);
+		pthread_mutex_unlock(&sim->queue_mutex);
 	}
 	return (burnt);
 }
