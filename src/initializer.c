@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:34:31 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/28 21:36:50 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/03 21:23:19 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,12 @@ static t_coder	initialize_coder(int id, t_sim *sim)
 	int		left;
 
 	left = id - 1;
-	if (left < 0)
-		left = sim->args.number_of_coders - 1;
+	if (left < 1)
+		left = sim->args.number_of_coders;
 	coder.id = id;
 	coder.compile_count = 0;
-	 coder.last_compile_start = get_time_ms();
+	coder.go = 0;
+	coder.last_compile_start = get_time_ms();
 	coder.left_dongle = &sim->dongles[left];
 	coder.right_dongle = &sim->dongles[id];
 	pthread_mutex_init(&coder.state, NULL);
@@ -55,8 +56,8 @@ void	create_coder_threads(t_sim *simualtor)
 	t_coder	*coders;
 
 	coders = simualtor->coders;
-	i = 0;
-	while (i < simualtor->args.number_of_coders)
+	i = 1;
+	while (i <= simualtor->args.number_of_coders)
 	{
 		pthread_create(&coders[i].thread, NULL, run_coder_cycle, &coders[i]);
 		i++;
@@ -75,14 +76,14 @@ static int	initialize_simulation_state(t_sim *simulator)
 	simulator->start_time = get_time_ms();
 	pthread_mutex_init(&simulator->queue_mutex, NULL);
 	pthread_cond_init(&simulator->cond, NULL);
-	i = -1;
-	while (++i < simulator->args.number_of_coders)
+	i = 0;
+	while (++i <= simulator->args.number_of_coders)
 		simulator->dongles[i] = initialize_dongle(i);
-	i = -1;
-	while (++i < simulator->args.number_of_coders)
+	i = 0;
+	while (++i <= simulator->args.number_of_coders)
 		simulator->coders[i] = initialize_coder(i, simulator);
-	i = -1;
-	while (++i < simulator->args.number_of_coders)
+	i = 0;
+	while (++i <= simulator->args.number_of_coders)
 		simulator->queue[i] = -1;
 	return (1);
 }
@@ -93,29 +94,27 @@ static int	initialize_simulation_state(t_sim *simulator)
 int	initialize_simulation(char **args, t_sim *simulator)
 {
 	t_args	parameters;
-	size_t n;
+	size_t	n;
+	size_t	n_plus;
 
 	parameters = (t_args){atoi(args[1]), atol(args[2]), atol(args[3]),
 		atol(args[4]), atol(args[5]), atoi(args[6]), atol(args[7]),
 		is_fifo_scheduler(args[8])};
 	simulator->args = parameters;
 	n = (size_t)parameters.number_of_coders;
-	if (parameters.number_of_coders < 0)
+	n_plus = n + 1;
+	if (n_plus > SIZE_MAX / sizeof(t_dongle))
 		return (0);
-	if (n > 0 && n > SIZE_MAX / sizeof(t_dongle))
+	simulator->dongles = malloc(sizeof(t_dongle) * n_plus);
+	if (!simulator->dongles)
 		return (0);
-	simulator->dongles = malloc(sizeof(t_dongle) * n);
-	if (!simulator->dongles && n > 0)
-		return (0);
-	if (n > 0 && n > SIZE_MAX / sizeof(t_coder))
+	if (n_plus > SIZE_MAX / sizeof(t_coder))
 		return (free(simulator->dongles), 0);
-	simulator->coders = malloc(sizeof(t_coder) * n);
-	if (!simulator->coders && n > 0)
+	simulator->coders = malloc(sizeof(t_coder) * n_plus);
+	if (!simulator->coders)
 		return (free(simulator->dongles), 0);
-	if (n > 0 && n > ((size_t)-1) / sizeof(int))
-		return (free(simulator->dongles), free(simulator->coders), 0);
-	simulator->queue = malloc(sizeof(int) * n);
-	if (!simulator->queue && n > 0)
+	simulator->queue = malloc(sizeof(int) * n_plus);
+	if (!simulator->queue)
 		return (free(simulator->dongles), free(simulator->coders), 0);
 	return (initialize_simulation_state(simulator));
 }

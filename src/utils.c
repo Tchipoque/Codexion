@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:35:44 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/28 21:44:21 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/04 00:12:55 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ int	destroy_simulation(t_sim *sim)
 	int	i;
 
 	n_coders = sim->args.number_of_coders;
-	i = -1;
-	while (++i < n_coders)
+	i = 0;
+	while (++i <= n_coders)
 	{
 		pthread_mutex_destroy(&sim->coders[i].state);
 		pthread_mutex_destroy(&sim->dongles[i].mutex);
@@ -103,6 +103,9 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 		pthread_mutex_unlock(&right->mutex);
 		pthread_mutex_unlock(&left->mutex);
 	}
+	pthread_mutex_lock(&coder->sim->queue_mutex);
+	coder->go = 0;
+	pthread_mutex_unlock(&coder->sim->queue_mutex);
 	if (coder->sim->args.scheduler)
 		remove_coder_from_queue(coder->id, coder->sim);
 	else
@@ -110,8 +113,7 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 	pthread_mutex_lock(&coder->sim->queue_mutex);
 	pthread_cond_broadcast(&coder->sim->cond);
 	pthread_mutex_unlock(&coder->sim->queue_mutex);
-	/* Avoid printing any events after simulation stop. */
 	if (!coder->sim->stop)
-		printf("%ld %d released dongles n (%d, %d)\n", time, coder->id + 1, right->id,
+		printf("%ld %d released dongles n (%d, %d)\n", time, coder->id, right->id,
 			left->id);
 }

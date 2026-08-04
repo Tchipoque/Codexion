@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:34:40 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/28 14:28:13 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/03 21:12:48 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@ void	*monitor_simulation(void *arg)
 	sim = (t_sim *)arg;
 	while (!sim->stop)
 	{
-		i = 0;
-		while (i < sim->args.number_of_coders)
+		i = 1;
+		while (i <= sim->args.number_of_coders)
 		{
 			if (check_stop_conditions(&sim->coders[i++]))
-				break ;	
+				break ;
 		}
 	}
 	return (NULL);

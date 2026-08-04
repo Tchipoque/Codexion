@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:35:08 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/22 00:38:26 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/04 22:07:46 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ static void	build_wait_time_priorities(t_priority priority_list[], t_sim *sim)
 	t_coder		*coders;
 	t_priority	buf;
 
-	i = -1;
+	i = 0;
 	coders = sim->coders;
 	now = get_time_ms();
-	while (++i < sim->args.number_of_coders)
+	while (++i <= sim->args.number_of_coders)
 	{
 		sim->queue[i] = i;
 		buf.id = i;
@@ -38,8 +38,7 @@ static void	build_wait_time_priorities(t_priority priority_list[], t_sim *sim)
 }
 
 /**
-
-	* Sorts the queue by descending waiting time so the most urgent coder stays at the front.
+ * Sorts the queue by descending waiting time so the most urgent coder stays at the front.
  */
 static void	sort_queue_by_wait_time_desc(t_priority priority_list[], t_sim *sim)
 {
@@ -47,13 +46,13 @@ static void	sort_queue_by_wait_time_desc(t_priority priority_list[], t_sim *sim)
 	int		b;
 	int		id_1;
 	int		id_2;
-	long	temp;
+	int		temp;
 
-	i = -1;
-	while (++i < sim->args.number_of_coders - 1)
+	i = 0;
+	while (++i < sim->args.number_of_coders)
 	{
 		b = i;
-		while (++b < sim->args.number_of_coders)
+		while (++b <= sim->args.number_of_coders)
 		{
 			id_1 = sim->queue[i];
 			id_2 = sim->queue[b];
@@ -73,13 +72,18 @@ static void	sort_queue_by_wait_time_desc(t_priority priority_list[], t_sim *sim)
  */
 void	wait_for_edf_turn(int id, t_sim *sim)
 {
-	t_priority	priority_list[sim->args.number_of_coders];
+	t_priority	priority_list[sim->args.number_of_coders + 1];
 
 	pthread_mutex_lock(&sim->queue_mutex);
 	build_wait_time_priorities(priority_list, sim);
 	sort_queue_by_wait_time_desc(priority_list, sim);
-	while (!sim->stop && (id != -1 && sim->queue[0] != id))
+	allowed_coders(sim);
+	while (id != -1 && !sim->stop)
+	{
+		if (sim->queue[1] == id || sim->coders[id].go)
+			break;
 		pthread_cond_wait(&sim->cond, &sim->queue_mutex);
+	}
 	pthread_mutex_unlock(&sim->queue_mutex);
 }
 
@@ -90,19 +94,25 @@ void	wait_for_fifo_turn(int id, t_sim *sim)
 {
 	int	i;
 
-	i = -1;
 	pthread_mutex_lock(&sim->queue_mutex);
-	while (++i < sim->args.number_of_coders)
+	while (!sim->stop)
 	{
-		if (queue_contains_id(id, sim))
-			break ;
-		if (sim->queue[i] == -1)
+		if (!queue_contains_id(id, sim))
 		{
-			sim->queue[i] = id;
-			break ;
+			i = 0;
+			while (++i <= sim->args.number_of_coders)
+			{
+				if (sim->queue[i] == -1)
+				{
+					sim->queue[i] = id;
+					break ;
+				}
+			}
 		}
-	}
-	while (!sim->stop && sim->queue[0] != id)
+		allowed_coders(sim);
+		if (sim->queue[1] == id || sim->coders[id].go)
+			break ;
 		pthread_cond_wait(&sim->cond, &sim->queue_mutex);
+	}
 	pthread_mutex_unlock(&sim->queue_mutex);
 }

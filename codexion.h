@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:36:10 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/28 21:35:49 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/03 21:47:40 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ typedef struct s_coder
 	long			last_compile_start;
 	t_dongle		*left_dongle;
 	t_dongle		*right_dongle;
+	int				go;
 	struct s_sim	*sim;
 	pthread_mutex_t	state;
 }					t_coder;
@@ -169,5 +170,8 @@ void				wait_for_edf_turn(int id, t_sim *sim);
  * Returns non-zero when the queue already contains the coder id.
  */
 int					queue_contains_id(int id, t_sim *sim);
+
+void				allowed_coders(t_sim *sim);
+
 
 #endif

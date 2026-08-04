@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:35:14 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/28 21:26:51 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/04 22:12:19 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,11 @@ int	check_compile_goal(t_sim *sim)
 	long	required_compiles;
 	t_args	args;
 
-	i = -1;
+	i = 0;
 	args = sim->args;
 	required_compiles = args.number_of_compiles_required;
-	while (++i < args.number_of_coders)
+	while (++i <= args.number_of_coders)
 	{
-		// printf("here\n\n");
 		if (required_compiles > sim->coders[i].compile_count)
 			return (0);
 	}
@@ -45,17 +44,13 @@ int	check_burnout_timeout(t_sim *sim, long last_compile, int id)
 
 	burnt = 0;
 	clock = get_time_ms() - last_compile;
-	time = get_time_ms() - sim->start_time;
-	if (clock >= sim->args.time_to_burnout)
+	if (clock > sim->args.time_to_burnout)
 	{
-		/* Report burnout (1-based coder id), signal stop and wake waiters.
-		   Do NOT destroy or exit here — let main join threads and clean up. */
 		time = get_time_ms() - sim->start_time;
-		printf("\033[1;31m%ld %d burned out\033[0m\n", time, id + 1);
+		printf("\033[1;31m%ld %d burned out\033[0m\n", time, id);
 		sim->stop = 1;
 		sim->burned_out = 1;
 		burnt = 1;
-		time = get_time_ms() - sim->start_time;
 		pthread_mutex_lock(&sim->queue_mutex);
 		pthread_cond_broadcast(&sim->cond);
 		pthread_mutex_unlock(&sim->queue_mutex);

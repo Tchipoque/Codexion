@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/08 22:46:05 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/28 21:52:46 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/03 21:21:04 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,8 @@
 static void	print_simulation_summary(t_sim *sim)
 {
 	long	i;
-	long	c;
 
-	i = 0;
+	i = 1;
 	if (sim->burned_out)
 		return;
 	printf("-----------------------------------\n");
@@ -29,10 +28,9 @@ static void	print_simulation_summary(t_sim *sim)
 	printf("N of coders: %d\n", sim->args.number_of_coders);
 	printf("N of compiles: %d\n", sim->args.number_of_compiles_required);
 	printf("-----------------------------------\n");
-	while (i < sim->args.number_of_coders)
+	while (i <= sim->args.number_of_coders)
 	{
-		c = i + 1;
-		printf("Coder %ld : %d compiles\n", c, sim->coders[i].compile_count);
+		printf("Coder %ld : %d compiles\n", i, sim->coders[i].compile_count);
 		i++;
 	}
 	i = (get_time_ms() - sim->start_time) / 1000;
@@ -49,7 +47,7 @@ int	main(int argc, char **argv)
 	t_sim	*sim;
 	int		i;
 
-	i = 0;
+	i = 1;
 	sim = malloc(sizeof(t_sim));
 	if (!sim)
 		return (1);
@@ -62,7 +60,7 @@ int	main(int argc, char **argv)
 	printf("-----------------------------------\n");
 	create_coder_threads(sim);
 	start_monitor_thread(sim);
-	while (i < sim->args.number_of_coders)
+	while (i <= sim->args.number_of_coders)
 		pthread_join(sim->coders[i++].thread, NULL);
 	pthread_join(sim->monitor, NULL);
 	print_simulation_summary(sim);

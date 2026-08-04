@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:34:24 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/07/28 21:50:39 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/04 22:03:02 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,29 @@
 void	remove_coder_from_queue(int id, t_sim *sim)
 {
 	int i;
+	int pos;
 
-	i = -1;
-	(void)id;
+	i = 0;
+	pos = -1;
 	pthread_mutex_lock(&sim->queue_mutex);
-	while (++i < sim->args.number_of_coders - 1)
-		sim->queue[i] = sim->queue[1 + i];
-	sim->queue[i] = -1;
+	while (++i <= sim->args.number_of_coders)
+	{
+		if (sim->queue[i] == id)
+		{
+			pos = i;
+			break ;
+		}
+	}
+	if (pos != -1)
+	{
+		i = pos;
+		while (i < sim->args.number_of_coders)
+		{
+			sim->queue[i] = sim->queue[i + 1];
+			i++;
+		}
+		sim->queue[sim->args.number_of_coders] = -1;
+	}
 	pthread_cond_broadcast(&sim->cond);
 	pthread_mutex_unlock(&sim->queue_mutex);
 }
@@ -37,8 +53,8 @@ int	queue_contains_id(int id, t_sim *sim)
 	int	i;
 
 	found = 0;
-	i = 0;
-	while (i < sim->args.number_of_coders)
+	i = 1;
+	while (i <= sim->args.number_of_coders)
 	{
 		if (sim->queue[i] == id)
 		{
@@ -56,19 +72,17 @@ int	queue_contains_id(int id, t_sim *sim)
 static void	acquire_dongle(t_coder *coder, t_dongle *dongle)
 {
 	long time;
-	int	i;
 
 	time = get_time_ms() - coder->sim->start_time;
-	i = 0;
 	while(!coder->sim->stop && get_time_ms() < dongle->available_at)
-		i++;
+		usleep(100);
 	pthread_mutex_lock(&dongle->mutex);
 	if (coder->sim->stop)
 	{
 		pthread_mutex_unlock(&dongle->mutex);
 		return;
 	}
-	printf("%ld %d has taken dongle n %d\n", time, 1 + coder->id, dongle->id);
+	printf("%ld %d has taken dongle n %d\n", time, coder->id, dongle->id);
 }
 
 /**
@@ -77,6 +91,7 @@ static void	acquire_dongle(t_coder *coder, t_dongle *dongle)
 void	acquire_dongles(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2)
 {
 	t_dongle	*tmp;
+	long		now;
 
 	if (coder->sim->args.scheduler)
 		wait_for_fifo_turn(coder->id, coder->sim);
@@ -85,6 +100,13 @@ void	acquire_dongles(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2)
 
 	if (coder->sim->stop)
 		return;
+	while (!coder->sim->stop)
+	{
+		now = get_time_ms();
+		if (now >= dongle1->available_at && now >= dongle2->available_at)
+			break ;
+		usleep(100);
+	}
 	if (dongle1->id > dongle2->id)
 	{
 		tmp = dongle1;
@@ -98,4 +120,41 @@ void	acquire_dongles(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2)
 		acquire_dongle(coder, dongle1);
 		acquire_dongle(coder, dongle2);
 	}
+}
+
+void	allowed_coders(t_sim *sim)
+{
+	int	i;
+	int	front_parity;
+	int	current_id;
+	int	n;
+
+	if (sim->queue[1] == -1)
+		return ;
+	n = sim->args.number_of_coders;
+	i = 1;
+	while (i <= sim->args.number_of_coders)
+	{
+		sim->coders[i].go = 0;
+		i++;
+	}
+	front_parity = sim->queue[1] % 2;
+	i = 1;
+	while (i <= sim->args.number_of_coders)
+	{
+		current_id = sim->queue[i];
+		if (current_id != -1 && (current_id % 2) == front_parity)
+		{
+			if (n % 2 == 1
+				&& ((current_id == 1 && sim->coders[n].go)
+					|| (current_id == n && sim->coders[1].go)))
+			{
+				i++;
+				continue ;
+			}
+			sim->coders[current_id].go = 1;
+		}
+		i++;
+	}
+	pthread_cond_broadcast(&sim->cond);
 }
