@@ -16,12 +16,12 @@
 # define _XOPEN_SOURCE 500
 # include <limits.h>
 # include <pthread.h>
+# include <stdint.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include <sys/time.h>
 # include <unistd.h>
-#include <stdint.h>
 
 /**
  * Priority snapshot used by the EDF scheduler.
@@ -172,6 +172,5 @@ void				wait_for_edf_turn(int id, t_sim *sim);
 int					queue_contains_id(int id, t_sim *sim);
 
 void				allowed_coders(t_sim *sim);
-
 
 #endif

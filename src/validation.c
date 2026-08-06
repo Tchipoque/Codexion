@@ -17,6 +17,8 @@
  */
 static int	validate_argument(int i, char *arg, char *parameters[])
 {
+	long	val;
+
 	if (i == 8)
 	{
 		if ((strcmp(arg, "fifo") != 0) && (strcmp(arg, "edf") != 0))
@@ -27,12 +29,13 @@ static int	validate_argument(int i, char *arg, char *parameters[])
 	}
 	else
 	{
-		long val = atol(arg);
-		if (!is_numeric_string(arg) || val < 0
-		 || (val == 0 && (i == 1 || i == 6)) || val > INT_MAX)
+		val = atol(arg);
+		if (!is_numeric_string(arg) || val < 0 || (val == 0 && (i == 1
+					|| i == 6)) || val > INT_MAX)
 		{
-			printf("ERROR, %s has to be a positive integer and 0 < n < INT_MAX \n", parameters[i
-				- 1]);
+			printf("ERROR,
+				%s has to be a positive integer and 0 < n < INT_MAX \n",
+				parameters[i - 1]);
 			return (0);
 		}
 	}
@@ -53,12 +56,12 @@ int	validate_arguments(int argc, char **args)
 	if (argc != 9)
 	{
 		printf("ERROR, program is expecting 8 arguments\n");
-		return(0);
+		return (0);
 	}
 	while (args[++i])
 	{
 		if (!validate_argument(i, args[i], parameters))
-			return(0);
+			return (0);
 	}
 	return (1);
 }

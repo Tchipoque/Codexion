@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:35:44 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/08/04 00:12:55 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/04 23:14:15 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ int	destroy_simulation(t_sim *sim)
 	pthread_mutex_destroy(&sim->queue_mutex);
 	pthread_cond_destroy(&sim->cond);
 	free(sim);
-	// printf("all clearr\n");
 	return (1);
 }
 /**
@@ -86,23 +85,15 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 {
 	t_dongle	*right;
 	t_dongle	*left;
-	long	time;
+	long		time;
 
 	right = coder->right_dongle;
 	left = coder->left_dongle;
 	time = get_time_ms() - coder->sim->start_time;
-	if (right == left)
-	{
-		right->available_at = get_time_ms() + cooldown;
-		pthread_mutex_unlock(&right->mutex);
-	}
-	else
-	{
-		right->available_at = get_time_ms() + cooldown;
-		left->available_at = get_time_ms() + cooldown;
-		pthread_mutex_unlock(&right->mutex);
-		pthread_mutex_unlock(&left->mutex);
-	}
+	right->available_at = get_time_ms() + cooldown;
+	left->available_at = get_time_ms() + cooldown;
+	pthread_mutex_unlock(&right->mutex);
+	pthread_mutex_unlock(&left->mutex);
 	pthread_mutex_lock(&coder->sim->queue_mutex);
 	coder->go = 0;
 	pthread_mutex_unlock(&coder->sim->queue_mutex);
@@ -114,6 +105,6 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 	pthread_cond_broadcast(&coder->sim->cond);
 	pthread_mutex_unlock(&coder->sim->queue_mutex);
 	if (!coder->sim->stop)
-		printf("%ld %d released dongles n (%d, %d)\n", time, coder->id, right->id,
-			left->id);
+		printf("%ld %d released dongles n (%d, %d)\n", time, coder->id,
+			right->id, left->id);
 }

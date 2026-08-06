@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:35:08 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/08/04 22:07:46 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/04 23:30:22 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,16 @@ static void	build_wait_time_priorities(t_priority priority_list[], t_sim *sim)
 }
 
 /**
- * Sorts the queue by descending waiting time so the most urgent coder stays at the front.
+
+	* Sorts the queue by descending waiting time so the most urgent coder stays at the front.
  */
 static void	sort_queue_by_wait_time_desc(t_priority priority_list[], t_sim *sim)
 {
-	int		i;
-	int		b;
-	int		id_1;
-	int		id_2;
-	int		temp;
+	int	i;
+	int	b;
+	int	id_1;
+	int	id_2;
+	int	temp;
 
 	i = 0;
 	while (++i < sim->args.number_of_coders)
@@ -81,7 +82,7 @@ void	wait_for_edf_turn(int id, t_sim *sim)
 	while (id != -1 && !sim->stop)
 	{
 		if (sim->queue[1] == id || sim->coders[id].go)
-			break;
+			break ;
 		pthread_cond_wait(&sim->cond, &sim->queue_mutex);
 	}
 	pthread_mutex_unlock(&sim->queue_mutex);

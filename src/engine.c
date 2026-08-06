@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:34:27 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/08/03 21:21:03 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/06 21:25:11 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,10 @@
  */
 static void	perform_refactoring(t_coder *coder, t_args args)
 {
-	long time;
+	long	time;
 
 	if (coder->sim->stop)
-		return;
+		return ;
 	time = get_time_ms() - coder->sim->start_time;
 	printf("%ld %d is refactoring \n", time, coder->id);
 	usleep(1000 * args.time_to_refactor);
@@ -30,10 +30,10 @@ static void	perform_refactoring(t_coder *coder, t_args args)
  */
 static void	perform_debugging(t_coder *coder, t_args args)
 {
-	long time;
+	long	time;
 
 	if (coder->sim->stop)
-		return;
+		return ;
 	time = get_time_ms() - coder->sim->start_time;
 	printf("%ld %d is refactoring \n", time, coder->id);
 	usleep(1000 * args.time_to_debug);
@@ -44,15 +44,14 @@ static void	perform_debugging(t_coder *coder, t_args args)
  */
 static void	perform_compile(t_coder *coder, t_args args)
 {
-	long time;
+	long	time;
 
 	if (coder->sim->stop)
-		return;
+		return ;
 	pthread_mutex_lock(&coder->state);
 	coder->last_compile_start = get_time_ms();
 	coder->compile_count += 1;
 	pthread_mutex_unlock(&coder->state);
-
 	time = get_time_ms() - coder->sim->start_time;
 	printf("%ld %d is compiling \n", time, coder->id);
 	usleep(1000 * args.time_to_compile);
@@ -75,9 +74,11 @@ void	*run_coder_cycle(void *arg)
 	{
 		first = coder->left_dongle;
 		second = coder->right_dongle;
+		while (first == second && !coder->sim->stop)
+			usleep(1000);
 		acquire_dongles(coder, first, second);
 		if (coder->sim->stop)
-			break;
+			break ;
 		perform_compile(coder, args);
 		release_dongles_and_requeue(coder, args.dongle_cooldown);
 		perform_debugging(coder, args);

@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:35:14 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/08/04 22:12:19 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/06 21:47:13 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,21 +39,21 @@ int	check_compile_goal(t_sim *sim)
 int	check_burnout_timeout(t_sim *sim, long last_compile, int id)
 {
 	long	clock;
-	int	burnt;
+	int		burnt;
 	long	time;
 
 	burnt = 0;
 	clock = get_time_ms() - last_compile;
 	if (clock > sim->args.time_to_burnout)
 	{
-		time = get_time_ms() - sim->start_time;
-		printf("\033[1;31m%ld %d burned out\033[0m\n", time, id);
 		sim->stop = 1;
-		sim->burned_out = 1;
-		burnt = 1;
 		pthread_mutex_lock(&sim->queue_mutex);
 		pthread_cond_broadcast(&sim->cond);
 		pthread_mutex_unlock(&sim->queue_mutex);
+		time = get_time_ms() - sim->start_time;
+		printf("\033[1;31m%ld %d burned out\033[0m\n", time, id);
+		sim->burned_out = 1;
+		burnt = 1;
 	}
 	return (burnt);
 }
@@ -75,4 +75,26 @@ int	check_stop_conditions(t_coder *coder)
 		stop = 0;
 	pthread_mutex_unlock(&coder->state);
 	return (stop);
+}
+
+/**
+ * Returns non-zero when the shared queue already contains the coder id.
+ */
+int	queue_contains_id(int id, t_sim *sim)
+{
+	int	found;
+	int	i;
+
+	found = 0;
+	i = 1;
+	while (i <= sim->args.number_of_coders)
+	{
+		if (sim->queue[i] == id)
+		{
+			found = 1;
+			break ;
+		}
+		i++;
+	}
+	return (found);
 }

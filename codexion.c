@@ -22,7 +22,7 @@ static void	print_simulation_summary(t_sim *sim)
 
 	i = 1;
 	if (sim->burned_out)
-		return;
+		return ;
 	printf("-----------------------------------\n");
 	printf("RESUME:\n");
 	printf("N of coders: %d\n", sim->args.number_of_coders);
@@ -55,7 +55,6 @@ int	main(int argc, char **argv)
 		return (free(sim), 1);
 	if (!initialize_simulation(argv, sim))
 		return (free(sim), 1);
-
 	printf("Simulation initialized\n");
 	printf("-----------------------------------\n");
 	create_coder_threads(sim);
