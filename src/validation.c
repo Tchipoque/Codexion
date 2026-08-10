@@ -41,6 +41,7 @@ static int	validate_argument(int i, char *arg, char *parameters[])
 	}
 	return (1);
 }
+
 /**
  * Validates the full command-line argument list.
  */

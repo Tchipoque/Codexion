@@ -44,7 +44,7 @@ typedef struct s_args
 	long			time_to_refactor;
 	int				number_of_compiles_required;
 	long			dongle_cooldown;
-	int scheduler; // 0 = fifo, 1 = edf
+	int				scheduler;
 }					t_args;
 
 /**
@@ -66,6 +66,7 @@ typedef struct s_coder
 	pthread_t		thread;
 	int				compile_count;
 	long			last_compile_start;
+	long			deadline;
 	t_dongle		*left_dongle;
 	t_dongle		*right_dongle;
 	int				go;
@@ -86,6 +87,7 @@ typedef struct s_sim
 	int				burned_out;
 	int				*queue;
 	pthread_mutex_t	queue_mutex;
+	pthread_mutex_t log;
 	pthread_cond_t	cond;
 	long			start_time;
 }					t_sim;

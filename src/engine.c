@@ -22,9 +22,13 @@ static void	perform_refactoring(t_coder *coder, t_args args)
 	if (coder->sim->stop)
 		return ;
 	time = get_time_ms() - coder->sim->start_time;
+	pthread_mutex_lock(&coder->sim->log);
 	printf("%ld %d is refactoring \n", time, coder->id);
+	pthread_mutex_unlock(&coder->sim->log);
+
 	usleep(1000 * args.time_to_refactor);
 }
+
 /**
  * Performs the debugging step.
  */
@@ -35,7 +39,10 @@ static void	perform_debugging(t_coder *coder, t_args args)
 	if (coder->sim->stop)
 		return ;
 	time = get_time_ms() - coder->sim->start_time;
-	printf("%ld %d is refactoring \n", time, coder->id);
+	pthread_mutex_lock(&coder->sim->log);
+	printf("%ld %d is debugging \n", time, coder->id);
+	pthread_mutex_unlock(&coder->sim->log);
+
 	usleep(1000 * args.time_to_debug);
 }
 
@@ -53,7 +60,10 @@ static void	perform_compile(t_coder *coder, t_args args)
 	coder->compile_count += 1;
 	pthread_mutex_unlock(&coder->state);
 	time = get_time_ms() - coder->sim->start_time;
+	pthread_mutex_lock(&coder->sim->log);
 	printf("%ld %d is compiling \n", time, coder->id);
+	pthread_mutex_unlock(&coder->sim->log);
+
 	usleep(1000 * args.time_to_compile);
 }
 

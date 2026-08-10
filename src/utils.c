@@ -59,10 +59,12 @@ int	destroy_simulation(t_sim *sim)
 	free(sim->dongles);
 	free(sim->queue);
 	pthread_mutex_destroy(&sim->queue_mutex);
+	pthread_mutex_destroy(&sim->log);
 	pthread_cond_destroy(&sim->cond);
 	free(sim);
 	return (1);
 }
+
 /**
  * Returns the current time in milliseconds.
  */
@@ -105,6 +107,9 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 	pthread_cond_broadcast(&coder->sim->cond);
 	pthread_mutex_unlock(&coder->sim->queue_mutex);
 	if (!coder->sim->stop)
-		printf("%ld %d released dongles n (%d, %d)\n", time, coder->id,
+	{
+
+				printf("%ld %d released dongles n (%d, %d)\n", time, coder->id,
 			right->id, left->id);
+	}
 }

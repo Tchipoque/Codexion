@@ -75,6 +75,7 @@ static int	initialize_simulation_state(t_sim *simulator)
 	simulator->burned_out = 0;
 	simulator->start_time = get_time_ms();
 	pthread_mutex_init(&simulator->queue_mutex, NULL);
+	pthread_mutex_init(&simulator->log, NULL);
 	pthread_cond_init(&simulator->cond, NULL);
 	i = 0;
 	while (++i <= simulator->args.number_of_coders)

@@ -44,7 +44,7 @@ int	check_burnout_timeout(t_sim *sim, long last_compile, int id)
 
 	burnt = 0;
 	clock = get_time_ms() - last_compile;
-	if (clock > sim->args.time_to_burnout)
+	if (clock >= sim->args.time_to_burnout)
 	{
 		sim->stop = 1;
 		pthread_mutex_lock(&sim->queue_mutex);

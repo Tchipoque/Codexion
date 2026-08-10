@@ -39,7 +39,7 @@ static void	build_wait_time_priorities(t_priority priority_list[], t_sim *sim)
 
 /**
 
-	* Sorts the queue by descending waiting time so the most urgent coder stays at the front.
+	* Sorts the queue by descending waiting time.
  */
 static void	sort_queue_by_wait_time_desc(t_priority priority_list[], t_sim *sim)
 {
@@ -73,8 +73,13 @@ static void	sort_queue_by_wait_time_desc(t_priority priority_list[], t_sim *sim)
  */
 void	wait_for_edf_turn(int id, t_sim *sim)
 {
-	t_priority	priority_list[sim->args.number_of_coders + 1];
+	t_priority	*priority_list;
+	int			n;
 
+	n = sim->args.number_of_coders + 1;
+	priority_list = malloc(sizeof(t_priority) * n);
+	if (!priority_list)
+		return ;
 	pthread_mutex_lock(&sim->queue_mutex);
 	build_wait_time_priorities(priority_list, sim);
 	sort_queue_by_wait_time_desc(priority_list, sim);
@@ -86,6 +91,7 @@ void	wait_for_edf_turn(int id, t_sim *sim)
 		pthread_cond_wait(&sim->cond, &sim->queue_mutex);
 	}
 	pthread_mutex_unlock(&sim->queue_mutex);
+	free (priority_list);
 }
 
 /**
@@ -111,7 +117,7 @@ void	wait_for_fifo_turn(int id, t_sim *sim)
 			}
 		}
 		allowed_coders(sim);
-		if (sim->queue[1] == id || sim->coders[id].go)
+		if (sim->queue[sim->args.number_of_coders] == id || sim->coders[id].go)
 			break ;
 		pthread_cond_wait(&sim->cond, &sim->queue_mutex);
 	}

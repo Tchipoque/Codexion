@@ -60,7 +60,10 @@ static void	acquire_dongle(t_coder *coder, t_dongle *dongle)
 		pthread_mutex_unlock(&dongle->mutex);
 		return ;
 	}
+	pthread_mutex_lock(&coder->sim->log);
 	printf("%ld %d has taken dongle n %d\n", time, coder->id, dongle->id);
+	pthread_mutex_unlock(&coder->sim->log);
+
 }
 
 /**
@@ -70,7 +73,6 @@ void	acquire_dongles(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2)
 {
 	long	now;
 
-	// t_dongle	*tmp;
 	if (coder->sim->stop)
 		return ;
 	if (coder->sim->args.scheduler)
