@@ -91,7 +91,7 @@ void	wait_for_edf_turn(int id, t_sim *sim)
 		pthread_cond_wait(&sim->cond, &sim->queue_mutex);
 	}
 	pthread_mutex_unlock(&sim->queue_mutex);
-	free (priority_list);
+	free(priority_list);
 }
 
 /**

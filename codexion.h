@@ -87,7 +87,7 @@ typedef struct s_sim
 	int				burned_out;
 	int				*queue;
 	pthread_mutex_t	queue_mutex;
-	pthread_mutex_t log;
+	pthread_mutex_t	log;
 	pthread_cond_t	cond;
 	long			start_time;
 }					t_sim;

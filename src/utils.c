@@ -108,8 +108,7 @@ void	release_dongles_and_requeue(t_coder *coder, long cooldown)
 	pthread_mutex_unlock(&coder->sim->queue_mutex);
 	if (!coder->sim->stop)
 	{
-
-				printf("%ld %d released dongles n (%d, %d)\n", time, coder->id,
+		printf("%ld %d released dongles n (%d, %d)\n", time, coder->id,
 			right->id, left->id);
 	}
 }

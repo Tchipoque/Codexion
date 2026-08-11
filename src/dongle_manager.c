@@ -6,7 +6,7 @@
 /*   By: etchipoq <etchipoq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/07/21 23:34:24 by etchipoq          #+#    #+#             */
-/*   Updated: 2026/08/06 21:46:56 by etchipoq         ###   ########.fr       */
+/*   Updated: 2026/08/11 22:45:01 by etchipoq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ static void	acquire_dongle(t_coder *coder, t_dongle *dongle)
 	pthread_mutex_lock(&coder->sim->log);
 	printf("%ld %d has taken dongle n %d\n", time, coder->id, dongle->id);
 	pthread_mutex_unlock(&coder->sim->log);
-
 }
 
 /**
@@ -89,6 +88,8 @@ void	acquire_dongles(t_coder *coder, t_dongle *dongle1, t_dongle *dongle2)
 		usleep(100);
 	}
 	acquire_dongle(coder, dongle1);
+	while (dongle1 == dongle2 && !coder->sim->stop)
+		usleep(1000);
 	acquire_dongle(coder, dongle2);
 }
 

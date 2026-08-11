@@ -35,7 +35,7 @@ static int	validate_argument(int i, char *arg, char *parameters[])
 		{
 			printf("ERROR, \
 				%s has to be a positive integer and 0 < n < INT_MAX \n",
-				parameters[i - 1]);
+					parameters[i - 1]);
 			return (0);
 		}
 	}
