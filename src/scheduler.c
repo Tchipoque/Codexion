@@ -117,7 +117,7 @@ void	wait_for_fifo_turn(int id, t_sim *sim)
 			}
 		}
 		allowed_coders(sim);
-		if (sim->queue[sim->args.number_of_coders] == id || sim->coders[id].go)
+		if (sim->queue[1] == id || sim->coders[id].go)
 			break ;
 		pthread_cond_wait(&sim->cond, &sim->queue_mutex);
 	}
